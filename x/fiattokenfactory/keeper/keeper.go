@@ -62,10 +62,16 @@ func (k Keeper) Logger(ctx sdk.Context) log.Logger {
 
 // SendRestrictionFn checks every $USDC transfer executed on the Noble chain against the blocklist and paused state
 func (k Keeper) SendRestrictionFn(ctx context.Context, fromAddr, toAddr sdk.AccAddress, amt sdk.Coins) (newToAddr sdk.AccAddress, err error) {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx.Logger().Info("In SendRestrictionFn")
 	mintingDenom := k.GetMintingDenom(ctx)
+	sdkCtx.Logger().Info("Welp", "denom", mintingDenom.Denom, "amt", amt)
 	if amount := amt.AmountOf(mintingDenom.Denom); !amount.IsZero() {
+		sdkCtx.Logger().Info("Guess what, I'm here")
 		paused := k.GetPaused(ctx)
+		sdkCtx.Logger().Info("Guess what, I'm here too", paused)
 		if paused.Paused {
+			sdkCtx.Logger().Info("Hopefully I'm here too")
 			return toAddr, errors.Wrapf(types.ErrPaused, "cannot perform token transfers")
 		}
 
